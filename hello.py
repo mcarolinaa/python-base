@@ -20,7 +20,7 @@ or
 """
 
 # special metadata
-__version__ = "0.0.1"
+__version__ = "0.1.2"
 __author__ = "MCarolina"
 __license__ = "Unlicense"
 
@@ -28,18 +28,21 @@ import os
 
 current_language = os.getenv("LANG")[:5]
 
-msg = "Hello world multi"
+msg = {
+    "en_US": "Hello world multi",
+    "pt_BR": "Olá mundo multi",
+    "es_ES": "Hola mundo multi",
+    "fr_FR": "Salut monde multi",
+    "ru_RU": "Privet, mul'ti mir",
+    }
 
-if current_language == "pt_BR":
-    msg =  "Olá mundo multi"
-elif current_language == "fr_FR":
-    msg = "Salut monde multi"
-elif current_language == "es_SP":
-    msg = "Hola, mundo multi"
-elif current_language == "ru_RU":
-    msg = "privet, mul'ti mir"
+# sets (hash table) O(1) - constante
+# dicts (hash table)
 
-print(msg)
+# Ordem Complexidade: O(n) (antigo)
+
+# O(1) - constante
+print(msg[current_language])
 
 
 
