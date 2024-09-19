@@ -12,6 +12,9 @@ set.
 ex:
     export LANG=pt_br
     
+Or inform through CLI argument --lang
+Or user will input
+    
 Execution:
 python3 hello.py
 or
@@ -25,8 +28,33 @@ __author__ = "MCarolina"
 __license__ = "Unlicense"
 
 import os
+import sys
 
-current_language = os.getenv("LANG")[:5]
+arguments = {
+    "lang": None, "count": 1,
+}
+
+for arg in sys.argv[1:]:
+    key, value = arg.split("=")
+    key = key.lstrip("-").strip()
+    value = value.strip()
+    if key not in arguments:
+        print(f"Invalid option `{key}`")
+        sys.exit()
+    arguments[key] = value
+    
+# current_language = os.getenv("LANG", "en_US")[:5]
+current_language = arguments["lang"]
+if current_language is None:
+    # todo: use repetition
+    if "LANG" in os.environ:
+        current_language = os.getenv("LANG")
+    else:
+        current_language = input(
+            "Choose a language:"
+        )
+
+current_language = current_language[:5]
 
 msg = {
     "en_US": "Hello world multi",
@@ -42,7 +70,7 @@ msg = {
 # Ordem Complexidade: O(n) (antigo)
 
 # O(1) - constante
-print(msg[current_language])
+print(msg[current_language] * int(arguments["count"]))
 
 
 
