@@ -1,0 +1,2 @@
+minha primeira nota	general	General note
+minha segunda nota	tech	Python
