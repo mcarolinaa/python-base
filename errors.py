@@ -5,17 +5,19 @@
 import os
 import sys
 
-if os.path.exists("names.txt"):
-    # input("...") # race condition - not desirable
-    names = open("names.txt").readlines()
-else:
-    print("[Error] File names.txt not found")
-    sys.exit(1)
-    
-# LBYL - Look Before You Leap
+# EAFP - Easy to Ask Forgiveness than Permission 
 
-if len(names) >= 3:
+try:
+    names = open("names.txt").readlines()
+except FileNotFoundError as e: # for errors that you know may happen
+    print(f"{str(e)}")
+    sys.exit(1)
+    # todo: use retry
+else: print("Sucess")
+finally: print("Finished")
+
+try:
     print(names[1])
-else:
+except:
     print("[Error] Missing names in the list")
     sys.exit(1)
