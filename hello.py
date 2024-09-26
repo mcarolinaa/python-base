@@ -29,22 +29,48 @@ __license__ = "Unlicense"
 
 import os
 import sys
+import logging
+
+# boilerplate from log.py
+log_level = os.getenv("LOG_LEVEL", "WARNING").upper()
+log = logging.Logger(__name__, log_level) 
+ch = logging.StreamHandler() 
+ch.setLevel(log_level)
+fmt = logging.Formatter(  
+    '%(asctime)s %(name)s %(levelname)s'
+    'l:%(lineno)d f:%(filename)s %(message)s'
+)
+ch.setFormatter(fmt)
+log.addHandler(ch)
+
 
 arguments = {
     "lang": None, "count": 1,
 }
 
 for arg in sys.argv[1:]:
-    key, value = arg.split("=")
+    try:
+        key, value = arg.split("=")
+    except ValueError as e:
+        log.error(
+        "You need to use `=`, you passed %s, try --key=value: %s",
+        arg,
+        str(e)
+    )
+        sys.exit(1)
     key = key.lstrip("-").strip()
     value = value.strip()
+    
+    # validacao
     if key not in arguments:
         print(f"Invalid option `{key}`")
-        sys.exit()
-    arguments[key] = value
+        sys.exit(1)
+        
+    arguments["lang"] = value
     
 # current_language = os.getenv("LANG", "en_US")[:5]
 current_language = arguments["lang"]
+
 if current_language is None:
     # todo: use repetition
     if "LANG" in os.environ:
@@ -69,8 +95,22 @@ msg = {
 
 # Ordem Complexidade: O(n) (antigo)
 
-# O(1) - constante
-print(msg[current_language] * int(arguments["count"]))
+# eafp
+try:
+    # current_language in msg:
+    message = msg[current_language]
+except KeyError as e:
+    print(f"[ERROR] {str(e)}")
+    print(f"Language is invalid, choose from: {list(msg.keys())}")
+    sys.exit(1)
+    
+# message = msg[current_language]
+
+# another way, not so good bc it does not inform the reason of the error
+# try w/ default value:
+# message = msg.get(current_language, msg["en_US"])
+
+print(message * int(arguments["count"]))
 
 
 
