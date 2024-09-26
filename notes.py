@@ -46,16 +46,31 @@ if arguments[0] == "read":
             print("-" * 30)
             print()
             
-if arguments[0] == "new":
+# if arguments[0] == "new":
     # cria new note
-    title = arguments[1] #todo: tratar exception
-    text = [
-        f"{title}",
-        input("tag:").strip(),
-        input("text:\n").strip(),
-    ]
-    with open(filepath, "a") as file_:
-        file_.write("\t".join(text) + "\n")
+    # title = arguments[1] #todo: tratar exception
+    # text = [
+    #     f"{title}",
+    #     input("tag:").strip(),
+    #     input("text:\n").strip(),
+    # ]
+    # with open(filepath, "a") as file_:
+    #     file_.write("\t".join(text) + "\n")
+        
+        
+if arguments[0] == "new":
+    try:
+        title = arguments[1]
+        text = [
+            f"{title}",
+            input("tag: ").strip(),
+            input("text: ").strip(),
+        ]
+        with open(filepath, "a") as file_:
+            file_.write("\t".join(text) + "\n")
+    except (IndexError, ValueError) as e:
+        print(f"[Error:] {e}")
+    
 
 
     
