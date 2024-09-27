@@ -36,6 +36,25 @@ __license__ = "Unlicense"
 import os
 import sys
 from datetime import datetime
+import logging
+from logging import handlers
+
+# BOILERPLATE - logging
+log_level = os.getenv("LOG_LEVEL", "WARNING").upper()
+log = logging.Logger("bruno", log_level)
+fh = handlers.RotatingFileHandler(
+   "meulog.log", 
+   maxBytes=300, # 10**6
+   backupCount=10,
+)
+fh.setLevel(log_level)
+fmt = logging.Formatter(
+    '%(asctime)s  %(name)s  %(levelname)s '
+    'l:%(lineno)d f:%(filename)s: %(message)s'
+)
+fh.setFormatter(fmt)
+log.addHandler(fh)
+
 
 arguments = sys.argv[1:] # pega os args q usuario digitar, exceto nome do progr
 
@@ -72,7 +91,8 @@ for num in nums:
 try:
     n1, n2 = validated_nums
 except ValueError as e:
-    print(str(e))
+    # print(str(e))
+    log.error("[ERROR] Error %s", str(e))
 
 # todo: use dict of functions
 if operation == "sum": result = n1 + n2
@@ -93,7 +113,8 @@ try:
         file_.write(f"{timestamp} - {user} - {operation}, {n1}, {n2} = {result}\n")
 except PermissionError as e:
     # todo: logging
-    print(str(e))
+    # print(str(e))
+    log.error("[ERROR] Error %s", str(e))
     sys.exit(1)
 
 
