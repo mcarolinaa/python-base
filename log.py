@@ -29,9 +29,7 @@ fh.setFormatter(fmt)
 log.addHandler(fh)
 
 # what can be adjusted when using the logging module: (above)
-# level
-# format 
-# destination
+# level, format, destination
 
 """
 # uses the instance, if you change anything from default 
