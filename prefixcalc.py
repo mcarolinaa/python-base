@@ -54,70 +54,73 @@ fmt = logging.Formatter(
 )
 fh.setFormatter(fmt)
 log.addHandler(fh)
+#
 
+while True:
+    arguments = sys.argv[1:] # pega os args q usuario digitar, exceto nome do progr
 
-arguments = sys.argv[1:] # pega os args q usuario digitar, exceto nome do progr
-
-if not arguments:
-    operation = input("Qual operação deseja usar? ")
-    n1 = int(input("Valor n1: "))
-    n2 = int(input("Valor n2: "))
-    arguments = [operation, n1, n2]
-    
-elif len(arguments) != 3:
-    print("Número de argumentos inválido")
-    print("ex: `sum 5 5 `")
-    sys.exit(1)
-    
-operation, *nums = arguments
-
-valid_operations = ("sum", "sub", "mul", "div")
-if operation not in valid_operations:
-    print("Operação inválida")
-    print(valid_operations)
-    sys.exit(1)
-    
-validated_nums = []    
-for num in nums:
-    # todo: use while + exception
-    if not num.replace(".", "").isdigit():
-        print(f"Número inválido {num}")
+    if not arguments:
+        operation = input("Qual operação deseja usar? ")
+        n1 = input("Valor n1: ")
+        n2 = input("Valor n2: ")
+        arguments = [operation, n1, n2]
+        
+    elif len(arguments) != 3:
+        print("Número de argumentos inválido")
+        print("ex: `sum 5 5 `")
         sys.exit(1)
-    if "." in num:
-        num = float(num)
-    else: num = int(num)
-    validated_nums.append(num)
-
-try:
-    n1, n2 = validated_nums
-except ValueError as e:
-    # print(str(e))
-    log.error("[ERROR] Error %s", str(e))
-
-# todo: use dict of functions
-if operation == "sum": result = n1 + n2
-elif operation == "sub": result = n1 - n2
-elif operation == "mul": result = n1 * n2
-elif operation == "div": result = n1 / n2
         
+    operation, *nums = arguments
+
+    valid_operations = ("sum", "sub", "mul", "div")
+    if operation not in valid_operations:
+        print("Operação inválida")
+        print(valid_operations)
+        sys.exit(1)
         
-path = os.curdir
-filepath = os.path.join(path, "prefixcalc.log") 
-timestamp = datetime.now().isoformat()
-user = os.getenv('USER', 'anonymous')
+    validated_nums = []    
+    for num in nums:
+        # todo: use while + exception
+        if not num.replace(".", "").isdigit():
+            print(f"Número inválido {num}")
+            sys.exit(1)
+        if "." in num:
+            num = float(num)
+        else:
+            num = int(num)
+        validated_nums.append(num)
 
-print(f"O resultado é = {result}")
+    try:
+        n1, n2 = validated_nums
+    except ValueError as e:
+        # print(str(e))
+        log.error("[ERROR] Error %s", str(e))
 
-try:
-    with open(filepath, "a") as file_:
-        file_.write(f"{timestamp} - {user} - {operation}, {n1}, {n2} = {result}\n")
-except PermissionError as e:
-    # todo: logging
-    # print(str(e))
-    log.error("[ERROR] Error %s", str(e))
-    sys.exit(1)
+    # todo: use dict of functions
+    if operation == "sum": result = n1 + n2
+    elif operation == "sub": result = n1 - n2
+    elif operation == "mul": result = n1 * n2
+    elif operation == "div": result = n1 / n2
+            
+            
+    path = os.curdir
+    filepath = os.path.join(path, "prefixcalc.log") 
+    timestamp = datetime.now().isoformat()
+    user = os.getenv('USER', 'anonymous')
 
+    print(f"O resultado é = {result}")
 
+    try:
+        with open(filepath, "a") as file_:
+            file_.write(f"{timestamp} - {user} - {operation}, {n1}, {n2} = {result}\n")
+    except PermissionError as e:
+        # todo: logging
+        # print(str(e))
+        log.error("[ERROR] Error %s", str(e))
+        sys.exit(1)
+
+    if input("Pressione enter para continuar ou qualquer tecla para sair"):
+        break
     
 
 

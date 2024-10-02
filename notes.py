@@ -37,40 +37,39 @@ if arguments[0] not in cmds:
     print( "Invalid command {arguments[0]}")
     
 if arguments[0] == "read":
+    try:
+        arg_tag = arguments[1].lower()
+    except IndexError:
+        arg_tag = input("Please enter the tag: ").strip().lower()
+    
     # leitura das notas
     for line in open(filepath):
         title, tag, text = line.split("\t")
-        if tag.lower() == arguments[1].lower():
+        if tag.lower() == arg_tag:
             print(f"title: {title}")
             print(f"text: {text}")
             print("-" * 30)
             print()
             
-# if arguments[0] == "new":
-    # cria new note
-    # title = arguments[1] #todo: tratar exception
-    # text = [
-    #     f"{title}",
-    #     input("tag:").strip(),
-    #     input("text:\n").strip(),
-    # ]
-    # with open(filepath, "a") as file_:
-    #     file_.write("\t".join(text) + "\n")
-        
-        
+       
 if arguments[0] == "new":
     try:
         title = arguments[1]
-        text = [
-            f"{title}",
-            input("tag: ").strip(),
-            input("text: ").strip(),
+    except IndexError:
+       title = input("Please enter the title: ").strip().title()
+        
+    text = [
+        f"{title}",
+        input("tag: ").strip(),
+        input("text: ").strip(),
         ]
-        with open(filepath, "a") as file_:
-            file_.write("\t".join(text) + "\n")
-    except (IndexError, ValueError) as e:
-        print(f"[Error:] {e}")
-    
+    with open(filepath, "a") as file_:
+        file_.write("\t".join(text) + "\n")
+
+cont = input(f"Quer continuar {arguments[0]} notas? [N/y]").strip().lower()
+if cont != "y":
+    break
+
 
 
     
