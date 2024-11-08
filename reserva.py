@@ -25,39 +25,42 @@ exibir uma mensagem informando que já está reservado.
 
 """
 import sys
-import os
 import logging
 
 log = logging.Logger("Alerta")
-path = os.curdir
-filepath = os.path.join(path, "quartos.txt")
+
+RESERVAS_FILE = "reservas.txt"
+QUARTOS_FILE = "quartos.txt"
+
+# TODO: usar lib csv
 
 # ler as reservas p/ ver oq ta ocupado
-ocupados = {}
+ocupados = {} # acumulador
 try:
-    for line in open("reservas.txt"):
-        nome, num_quarto, dias = line.strip().split(",")
+    for line in open(RESERVAS_FILE):
+        nome_cliente, num_quarto, dias = line.strip().split(",")
         ocupados[int(num_quarto)] = {
-            "nome": nome,
-            "dias": dias
+            "nome_cliente": nome_cliente,
+            "dias": int(dias)
             }
 except FileNotFoundError:
-    logging.error("Arquivo reservas.txt não existe")
+    logging.error("Arquivo %s não existe", RESERVAS_FILE)
     sys.exit(1)
 
 
 # informa o que tem: le quartos e apresenta
+# TODO: usar funçãp p/ ler arquivos
 quartos = {}
 try:
-    for line in open(filepath):
-        codigo, nome, preco = line.strip().split(",")
-        quartos[int(codigo)] = {
-            "nome": nome,
+    for line in open(QUARTOS_FILE):
+        num_quarto, nome_quarto, preco = line.strip().split(",")
+        quartos[int(num_quarto)] = {
+            "nome_quarto": nome_quarto,
             "preco": float(preco), #TODO: Decimal
-            "disponivel": False if int(codigo) in ocupados else True
+            "disponivel": False if int(num_quarto) in ocupados else True
         }
 except FileNotFoundError:
-    logging.error("{filepath} não existe")
+    logging.error("Arquivo %s não existe", QUARTOS_FILE)
     sys.exit(1)
 
 
@@ -65,49 +68,50 @@ except FileNotFoundError:
 print("Reserva do Hotel Pyhtonico")
 print("-"* 40)
 
-# se nao estiver lotado
+# se estiver lotado, nao
 if len(ocupados) == len(quartos):
     print("Hotel lotado")
-    sys.exit(1)
+    sys.exit(0)
 
 # efetiva reserva
-nome = input(f"Informe o/a nome principal da reserva: ").strip().lower()
+nome_cliente = input(f"Informe o/a nome principal da reserva: ").strip().lower()
+print()
 print("Lista de quartos disponíveis:")
-for codigo, dados in quartos.items():
-    nome_quarto = dados["nome"]
+for num_quarto, dados in quartos.items():
+    nome_quarto = dados["nome_quarto"]
     preco = dados["preco"]
     disponivel = "⛔️" if not dados["disponivel"] else "👍🏼"
-    print(f"{codigo} - {nome_quarto} - R$ {preco:.2f} - {disponivel}")
+    print(f"{num_quarto} - {nome_quarto} - R$ {preco:.2f} - {disponivel}")
 
 
 # pega info do usuario
 print("-"* 40)
 
 try:
-    num_quarto = int(input("Número do quarto: ").strip())
+    num_quarto = int(input("Número do quarto desejado: ").strip())
     if not quartos[num_quarto]["disponivel"]:
         print(f"O quarto {num_quarto} está ocupado")
-        sys.exit(1)
-except ValueError:
-    logging.error("Número inválido, insira apenas dígitos")
-    sys.exit(1)
+        sys.exit(0)
 except KeyError:
-    print(f"O quarto {num_quarto} não existe")
-    sys.exit(1)
+    logging.error("O quarto {num_quarto} não existe")
+    sys.exit(0)
+except ValueError:
+    print(f"Número inválido, insira apenas dígitos")
+    sys.exit(0)
 
 try:
     dias = int(input("Quantas diárias? ").strip())
 except ValueError:
      logging.error("Número inválido, insira apenas dígitos")
-     sys.exit(1)
+     sys.exit(0)
      
 # print(nome, num_quarto, dias)
-nome_quarto = quartos[num_quarto]["nome"]
+nome_quarto = quartos[num_quarto]["nome_quarto"]
 preco_quarto = quartos[num_quarto]["preco"]
 disponivel = quartos[num_quarto]["disponivel"]
 total =  preco_quarto * dias
 
-with open("reservas.txt", "a") as f:
-    f.write(f"{nome}, {num_quarto}, {dias}\n")
+with open(RESERVAS_FILE, "a") as f:
+    f.write(f"{nome_cliente}, {num_quarto}, {dias}\n")
 
-print(f"{nome}, você escolheu o quarto {nome_quarto} e vai custar: R${total}:.2f")
+print(f"{nome_cliente}, você escolheu o quarto {nome_quarto} e vai custar: R${total:.2f}")
