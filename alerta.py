@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 Alarme de temperatura
 
@@ -12,35 +14,48 @@ temp * 3 >= umidade: Alerta, perigo de calor úmido
 temp < 0: Alerta de frio extremo
 """
 
+# TODO: mover p/ modulo de utilidades
+
 import sys
 import logging
+from typing import Dict
 
 log = logging.Logger("Alerta")
 
+
+def is_completely_filled(dict_of_inputs: Dict):
+    """returns a boolean telling if a dictionary is completely filled"""
+    info_size = len(dict_of_inputs)
+    filled_size = len(
+        [value for value in dict_of_inputs.values() if value is not None]
+        )
+    return info_size == filled_size
+   
+   
+def read_inputs_for_dict(dict_of_info):
+    """read information for a dict from user input"""
+    
+    for key in dict_of_info.keys():
+        if dict_of_info[key] is not None:
+            continue
+        try:
+            dict_of_info[key] = int(input(f"{key}:").strip())
+        except ValueError:
+            log.error("%s inválida, digite números", key)
+            break
+    
+
+# Programa principl
 info = {
     "temperatura": None,
     "umidade": None
 }
-
-
-while True:
     
-    info_size = len(info.values())
-    filled_size = len([value for value in info.values() if value is not None])
-    if info_size == filled_size:
-        break   
+while not is_completely_filled(info):
     
-    if all(info.values()):
-        break # se dict preenchido, para
+    read_inputs_for_dict(info)
     
-    for key in info.keys():
-        if info[key] is not None:
-            continue
-        try:
-            info[key] = int(input(f"{key}:").strip())
-        except ValueError:
-            log.error("%s inválida, digite números", key)
-            break
+    
 
 temp, umidade = info.values()
 
